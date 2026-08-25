@@ -9,7 +9,6 @@ void setup() {
 }
 
 void loop() {
-  // INPUT_PULLUP invierte la lógica: presionado = LOW, suelto = HIGH
   bool pressed = digitalRead(BUTTON_PIN) == LOW;
   digitalWrite(LED_PIN, pressed ? HIGH : LOW);
 }
