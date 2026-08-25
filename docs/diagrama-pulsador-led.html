@@ -1,0 +1,386 @@
+<!-- Diagrama de conexión: Pulsador + LED en Arduino Uno -->
+<title>Pulsador + LED — Arduino Uno</title>
+<style>
+  :root {
+    --bg: #EEF3F2;
+    --surface: #E2E9E7;
+    --surface-2: #D6E0DD;
+    --ink: #14211F;
+    --ink-muted: #4A5C59;
+    --accent: #0E7C82;
+    --border: #C7D2CF;
+    --wire-gnd: #232C2A;
+    --wire-d2: #2A56C9;
+    --wire-d8: #B85A17;
+    --led-glow: #E2793D;
+
+    --font-sans: -apple-system, "Segoe UI", "Helvetica Neue", ui-sans-serif, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0E1614;
+      --surface: #16211F;
+      --surface-2: #1C2926;
+      --ink: #E7EFED;
+      --ink-muted: #9FB0AC;
+      --accent: #4FD1D6;
+      --border: #2A3735;
+      --wire-gnd: #B9C2BF;
+      --wire-d2: #7FA2FF;
+      --wire-d8: #FFAA63;
+      --led-glow: #FFAA63;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0E1614;
+    --surface: #16211F;
+    --surface-2: #1C2926;
+    --ink: #E7EFED;
+    --ink-muted: #9FB0AC;
+    --accent: #4FD1D6;
+    --border: #2A3735;
+    --wire-gnd: #B9C2BF;
+    --wire-d2: #7FA2FF;
+    --wire-d8: #FFAA63;
+    --led-glow: #FFAA63;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+  }
+
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  header.doc-head {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(26px, 4vw, 34px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .lede {
+    margin: 0;
+    max-width: 62ch;
+    color: var(--ink-muted);
+    font-size: 15.5px;
+  }
+
+  figure.diagram {
+    margin: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 20px 16px;
+  }
+
+  figure.diagram svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  figcaption {
+    margin-top: 14px;
+    font-size: 13.5px;
+    color: var(--ink-muted);
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+
+  .svg-ink { color: var(--ink); }
+
+  .grid-two {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 640px) {
+    .grid-two { grid-template-columns: 1fr; }
+  }
+
+  section h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    margin: 0 0 12px;
+    font-weight: 600;
+  }
+
+  .table-wrap { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted);
+    font-weight: 600;
+    background: var(--surface-2);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  td.mono, th.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  .steps {
+    margin: 0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14.5px;
+  }
+
+  .steps li::marker {
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .note {
+    font-size: 13px;
+    color: var(--ink-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 10px 14px;
+  }
+
+  .code-ref {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .code-ref .path {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--ink-muted);
+  }
+
+  pre {
+    margin: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+
+  footer.doc-foot {
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+</style>
+
+<div class="page">
+
+  <header class="doc-head">
+    <span class="eyebrow">Redes2 · Referencia de hardware</span>
+    <h1>Pulsador + LED sobre Arduino Uno</h1>
+    <p class="lede">El LED en D8 se enciende mientras el pulsador en D2 está presionado y se apaga al soltarlo, leído directamente en cada ciclo de <code>loop()</code>, sin <code>delay()</code>.</p>
+  </header>
+
+  <figure class="diagram svg-ink">
+    <svg viewBox="0 0 880 400" role="img" aria-label="El pulsador conecta el pin D2 a GND mediante el pull-up interno, sin resistencia externa. El LED en el pin D8 pasa por una resistencia de 220 ohms antes de llegar a su ánodo. Ambas ramas comparten el mismo nodo GND de la placa.">
+
+      <!-- Arduino Uno silhouette -->
+      <rect x="60" y="80" width="200" height="260" rx="12" fill="none" stroke="currentColor" stroke-width="2"/>
+      <rect x="34" y="100" width="28" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="49" cy="300" r="13" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <text x="160" y="330" text-anchor="middle" font-family="ui-monospace, monospace" font-size="12" letter-spacing="1" fill="currentColor">ARDUINO UNO</text>
+
+      <!-- Pads on board edge -->
+      <circle cx="260" cy="150" r="4.5" fill="var(--wire-d2)"/>
+      <text x="248" y="140" text-anchor="end" font-family="ui-monospace, monospace" font-size="13" font-weight="600" fill="var(--wire-d2)">D2</text>
+
+      <circle cx="260" cy="210" r="4.5" fill="var(--wire-d8)"/>
+      <text x="248" y="200" text-anchor="end" font-family="ui-monospace, monospace" font-size="13" font-weight="600" fill="var(--wire-d8)">D8</text>
+
+      <circle cx="260" cy="270" r="4.5" fill="var(--wire-gnd)"/>
+      <text x="248" y="260" text-anchor="end" font-family="ui-monospace, monospace" font-size="13" font-weight="600" fill="var(--wire-gnd)">GND</text>
+
+      <!-- Button branch (D2) -->
+      <line x1="260" y1="150" x2="400" y2="150" stroke="var(--wire-d2)" stroke-width="2.5"/>
+      <circle cx="405" cy="150" r="3" fill="currentColor"/>
+      <line x1="405" y1="150" x2="418" y2="150" stroke="currentColor" stroke-width="2"/>
+      <line x1="418" y1="150" x2="442" y2="138" stroke="currentColor" stroke-width="2"/>
+      <line x1="442" y1="150" x2="455" y2="150" stroke="currentColor" stroke-width="2"/>
+      <circle cx="460" cy="150" r="3" fill="currentColor"/>
+      <line x1="430" y1="138" x2="430" y2="120" stroke="currentColor" stroke-width="2"/>
+      <line x1="420" y1="120" x2="440" y2="120" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="430" y1="100" x2="430" y2="116" stroke="currentColor" stroke-width="1.5"/>
+      <polygon points="430,118 425,109 435,109" fill="currentColor"/>
+      <text x="430" y="90" text-anchor="middle" font-size="12" fill="var(--ink-muted)">presionar</text>
+      <text x="430" y="176" text-anchor="middle" font-size="12" fill="var(--ink-muted)">pulsador (NA)</text>
+
+      <line x1="460" y1="150" x2="460" y2="330" stroke="var(--wire-gnd)" stroke-width="2.5"/>
+
+      <!-- LED branch (D8) -->
+      <line x1="260" y1="210" x2="330" y2="210" stroke="var(--wire-d8)" stroke-width="2.5"/>
+      <rect x="330" y="200" width="80" height="20" rx="2" fill="none" stroke="var(--wire-d8)" stroke-width="2"/>
+      <rect x="341" y="200" width="6" height="20" fill="#C23B3B"/>
+      <rect x="353" y="200" width="6" height="20" fill="#C23B3B"/>
+      <rect x="365" y="200" width="6" height="20" fill="#7A4A26"/>
+      <rect x="388" y="200" width="6" height="20" fill="#C9A227"/>
+      <text x="370" y="192" text-anchor="middle" font-size="12" fill="var(--ink-muted)">220Ω</text>
+
+      <line x1="410" y1="210" x2="450" y2="210" stroke="var(--wire-d8)" stroke-width="2.5"/>
+      <polygon points="450,197 450,223 478,210" fill="none" stroke="var(--led-glow)" stroke-width="2.2"/>
+      <line x1="478" y1="197" x2="478" y2="223" stroke="var(--led-glow)" stroke-width="2.2"/>
+      <line x1="465" y1="196" x2="474" y2="184" stroke="var(--led-glow)" stroke-width="1.6"/>
+      <polygon points="474,184 466,184 474,192" fill="var(--led-glow)"/>
+      <line x1="473" y1="200" x2="482" y2="188" stroke="var(--led-glow)" stroke-width="1.6"/>
+      <polygon points="482,188 474,188 482,196" fill="var(--led-glow)"/>
+      <text x="464" y="243" text-anchor="middle" font-size="12" fill="var(--ink-muted)">LED</text>
+
+      <line x1="478" y1="210" x2="560" y2="210" stroke="var(--wire-gnd)" stroke-width="2.5"/>
+      <line x1="560" y1="210" x2="560" y2="330" stroke="var(--wire-gnd)" stroke-width="2.5"/>
+
+      <!-- GND bus -->
+      <line x1="260" y1="270" x2="260" y2="330" stroke="var(--wire-gnd)" stroke-width="2.5"/>
+      <line x1="260" y1="330" x2="620" y2="330" stroke="var(--wire-gnd)" stroke-width="2.5"/>
+      <circle cx="460" cy="330" r="3.5" fill="var(--wire-gnd)"/>
+      <circle cx="560" cy="330" r="3.5" fill="var(--wire-gnd)"/>
+      <text x="600" y="350" text-anchor="middle" font-family="ui-monospace, monospace" font-size="12" fill="var(--wire-gnd)">GND común</text>
+
+      <!-- Legend -->
+      <g transform="translate(700,90)">
+        <rect x="-14" y="-24" width="176" height="98" rx="8" fill="var(--bg)" stroke="var(--border)" stroke-width="1.5"/>
+        <line x1="0" y1="0" x2="20" y2="0" stroke="var(--wire-d2)" stroke-width="3"/>
+        <text x="28" y="4" font-size="12" fill="currentColor">Señal D2 (pulsador)</text>
+        <line x1="0" y1="24" x2="20" y2="24" stroke="var(--wire-d8)" stroke-width="3"/>
+        <text x="28" y="28" font-size="12" fill="currentColor">Señal D8 (LED)</text>
+        <line x1="0" y1="48" x2="20" y2="48" stroke="var(--wire-gnd)" stroke-width="3"/>
+        <text x="28" y="52" font-size="12" fill="currentColor">GND común</text>
+      </g>
+
+    </svg>
+    <figcaption>El pulsador conecta D2 a GND vía el pull-up interno del pin (sin resistencia externa). El LED en D8 pasa por 220Ω antes de su ánodo. Ambas ramas cierran sobre el mismo nodo GND de la placa.</figcaption>
+  </figure>
+
+  <div class="grid-two">
+    <section>
+      <h2>Lista de materiales</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Componente</th><th>Cant.</th><th>Nota</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Arduino Uno</td><td class="mono">1</td><td>placa principal</td></tr>
+            <tr><td>Pulsador momentáneo (NA)</td><td class="mono">1</td><td>2 o 4 patas</td></tr>
+            <tr><td>LED (cualquier color)</td><td class="mono">1</td><td>ánodo = pata larga</td></tr>
+            <tr><td>Resistencia 220Ω</td><td class="mono">1</td><td>en serie con el LED</td></tr>
+            <tr><td>Jumpers M-M</td><td class="mono">4</td><td>2 por rama</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Tabla de verdad</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Pulsador</th><th class="mono">D2</th><th>LED</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Suelto</td><td class="mono">HIGH</td><td>Apagado</td></tr>
+            <tr><td>Presionado</td><td class="mono">LOW</td><td>Encendido</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <section>
+    <h2>Pasos de conexión</h2>
+    <ol class="steps">
+      <li>Une una pata del pulsador al pin <strong>D2</strong> y la otra a <strong>GND</strong>.</li>
+      <li>Conecta el ánodo del LED a un extremo de la resistencia de <strong>220Ω</strong>.</li>
+      <li>Conecta el otro extremo de la resistencia al pin <strong>D8</strong>.</li>
+      <li>Conecta el cátodo del LED a <strong>GND</strong>.</li>
+    </ol>
+    <p class="note">El pin D2 se declara <code>INPUT_PULLUP</code>: el pull-up interno mantiene el pin en HIGH cuando el botón está suelto, así que no necesitas una resistencia externa en esa rama — solo el pulsador entre D2 y GND.</p>
+  </section>
+
+  <section class="code-ref">
+    <h2>Código de referencia</h2>
+    <span class="path">src/uno/main.cpp</span>
+    <pre>const int BUTTON_PIN = 2;
+const int LED_PIN = 8;
+
+void setup() {
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  pinMode(LED_PIN, OUTPUT);
+}
+
+void loop() {
+  bool pressed = digitalRead(BUTTON_PIN) == LOW;
+  digitalWrite(LED_PIN, pressed ? HIGH : LOW);
+}</pre>
+  </section>
+
+  <footer class="doc-foot">
+    Diagrama esquemático simplificado — no representa la disposición física exacta de los pines en la placa real.
+  </footer>
+
+</div>
