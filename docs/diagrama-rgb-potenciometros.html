@@ -1,0 +1,461 @@
+<!-- Diagrama de conexión: RGB + 3 potenciómetros en Arduino Uno -->
+<title>RGB + Potenciómetros — Arduino Uno</title>
+<style>
+  :root {
+    --bg: #EEF3F2;
+    --surface: #E2E9E7;
+    --surface-2: #D6E0DD;
+    --ink: #14211F;
+    --ink-muted: #4A5C59;
+    --accent: #0E7C82;
+    --border: #C7D2CF;
+
+    --ch-r: #C23B3B;
+    --ch-g: #2E8B57;
+    --ch-b: #2A56C9;
+    --wire-gnd: #232C2A;
+    --wire-pwr: #B4711F;
+
+    --font-sans: -apple-system, "Segoe UI", "Helvetica Neue", ui-sans-serif, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0E1614;
+      --surface: #16211F;
+      --surface-2: #1C2926;
+      --ink: #E7EFED;
+      --ink-muted: #9FB0AC;
+      --accent: #4FD1D6;
+      --border: #2A3735;
+
+      --ch-r: #FF6B6B;
+      --ch-g: #5FD98A;
+      --ch-b: #7FA2FF;
+      --wire-gnd: #B9C2BF;
+      --wire-pwr: #FFB066;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0E1614;
+    --surface: #16211F;
+    --surface-2: #1C2926;
+    --ink: #E7EFED;
+    --ink-muted: #9FB0AC;
+    --accent: #4FD1D6;
+    --border: #2A3735;
+
+    --ch-r: #FF6B6B;
+    --ch-g: #5FD98A;
+    --ch-b: #7FA2FF;
+    --wire-gnd: #B9C2BF;
+    --wire-pwr: #FFB066;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  header.doc-head {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(26px, 4vw, 34px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .lede {
+    margin: 0;
+    max-width: 66ch;
+    color: var(--ink-muted);
+    font-size: 15.5px;
+  }
+
+  figure.diagram {
+    margin: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 20px 16px;
+  }
+
+  figure.diagram svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  figcaption {
+    margin-top: 14px;
+    font-size: 13.5px;
+    color: var(--ink-muted);
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+
+  .svg-ink { color: var(--ink); }
+
+  .grid-two {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 680px) {
+    .grid-two { grid-template-columns: 1fr; }
+  }
+
+  section h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    margin: 0 0 12px;
+    font-weight: 600;
+  }
+
+  .table-wrap { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted);
+    font-weight: 600;
+    background: var(--surface-2);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  td.mono, th.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+
+  .steps {
+    margin: 0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14.5px;
+  }
+
+  .steps li::marker {
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .note {
+    font-size: 13px;
+    color: var(--ink-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 10px 14px;
+  }
+
+  .code-ref {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .code-ref .path {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--ink-muted);
+  }
+
+  pre {
+    margin: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+
+  footer.doc-foot {
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+</style>
+
+<div class="page">
+
+  <header class="doc-head">
+    <span class="eyebrow">Redes2 · Referencia de hardware</span>
+    <h1>RGB + 3 potenciómetros sobre Arduino Uno</h1>
+    <p class="lede">Cada potenciómetro controla un canal de color: su posición (0–1023) se traduce a intensidad PWM (0–255) para ese canal del LED RGB, produciendo toda la gama de colores.</p>
+  </header>
+
+  <figure class="diagram svg-ink">
+    <svg viewBox="0 0 900 520" role="img" aria-label="Tres potenciómetros conectados a las entradas analógicas A0, A1 y A2 controlan, vía código, los tres canales de un LED RGB de cátodo común, cada uno con su resistencia de 220 ohms hacia los pines PWM D9, D10 y D11. Las tres ramas y el cátodo común comparten el mismo nodo GND, y los potenciómetros comparten la misma alimentación de 5V.">
+
+      <!-- Arduino Uno silhouette -->
+      <rect x="60" y="80" width="200" height="420" rx="12" fill="none" stroke="currentColor" stroke-width="2"/>
+      <rect x="34" y="100" width="28" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="49" cy="470" r="13" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <text x="160" y="284" text-anchor="middle" font-family="ui-monospace, monospace" font-size="12" letter-spacing="1" fill="currentColor">ARDUINO UNO</text>
+
+      <!-- Output pads: D9/D10/D11 -->
+      <circle cx="260" cy="140" r="4.5" fill="var(--ch-r)"/>
+      <text x="248" y="130" text-anchor="end" font-family="ui-monospace, monospace" font-size="12.5" font-weight="600" fill="var(--ch-r)">D9</text>
+      <circle cx="260" cy="190" r="4.5" fill="var(--ch-g)"/>
+      <text x="248" y="180" text-anchor="end" font-family="ui-monospace, monospace" font-size="12.5" font-weight="600" fill="var(--ch-g)">D10</text>
+      <circle cx="260" cy="240" r="4.5" fill="var(--ch-b)"/>
+      <text x="248" y="230" text-anchor="end" font-family="ui-monospace, monospace" font-size="12.5" font-weight="600" fill="var(--ch-b)">D11</text>
+
+      <!-- Input pads: A0/A1/A2 -->
+      <circle cx="260" cy="320" r="4.5" fill="var(--ch-r)"/>
+      <text x="248" y="310" text-anchor="end" font-family="ui-monospace, monospace" font-size="12.5" font-weight="600" fill="var(--ch-r)">A0</text>
+      <circle cx="260" cy="360" r="4.5" fill="var(--ch-g)"/>
+      <text x="248" y="350" text-anchor="end" font-family="ui-monospace, monospace" font-size="12.5" font-weight="600" fill="var(--ch-g)">A1</text>
+      <circle cx="260" cy="400" r="4.5" fill="var(--ch-b)"/>
+      <text x="248" y="390" text-anchor="end" font-family="ui-monospace, monospace" font-size="12.5" font-weight="600" fill="var(--ch-b)">A2</text>
+
+      <!-- LED branch: resistors -->
+      <g font-family="ui-monospace, monospace">
+        <rect x="340" y="132" width="70" height="16" rx="2" fill="none" stroke="var(--ch-r)" stroke-width="2"/>
+        <rect x="349" y="132" width="5" height="16" fill="#C23B3B"/>
+        <rect x="359" y="132" width="5" height="16" fill="#C23B3B"/>
+        <rect x="369" y="132" width="5" height="16" fill="#7A4A26"/>
+        <rect x="389" y="132" width="5" height="16" fill="#C9A227"/>
+
+        <rect x="340" y="182" width="70" height="16" rx="2" fill="none" stroke="var(--ch-g)" stroke-width="2"/>
+        <rect x="349" y="182" width="5" height="16" fill="#C23B3B"/>
+        <rect x="359" y="182" width="5" height="16" fill="#C23B3B"/>
+        <rect x="369" y="182" width="5" height="16" fill="#7A4A26"/>
+        <rect x="389" y="182" width="5" height="16" fill="#C9A227"/>
+
+        <rect x="340" y="232" width="70" height="16" rx="2" fill="none" stroke="var(--ch-b)" stroke-width="2"/>
+        <rect x="349" y="232" width="5" height="16" fill="#C23B3B"/>
+        <rect x="359" y="232" width="5" height="16" fill="#C23B3B"/>
+        <rect x="369" y="232" width="5" height="16" fill="#7A4A26"/>
+        <rect x="389" y="232" width="5" height="16" fill="#C9A227"/>
+        <text x="375" y="122" text-anchor="middle" font-size="11.5" fill="var(--ink-muted)">220Ω ×3</text>
+      </g>
+
+      <line x1="260" y1="140" x2="340" y2="140" stroke="var(--ch-r)" stroke-width="2.5"/>
+      <line x1="410" y1="140" x2="520" y2="140" stroke="var(--ch-r)" stroke-width="2.5"/>
+      <line x1="260" y1="190" x2="340" y2="190" stroke="var(--ch-g)" stroke-width="2.5"/>
+      <line x1="410" y1="190" x2="520" y2="190" stroke="var(--ch-g)" stroke-width="2.5"/>
+      <line x1="260" y1="240" x2="340" y2="240" stroke="var(--ch-b)" stroke-width="2.5"/>
+      <line x1="410" y1="240" x2="520" y2="240" stroke="var(--ch-b)" stroke-width="2.5"/>
+
+      <!-- LED RGB component box -->
+      <rect x="520" y="120" width="110" height="140" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+      <text x="575" y="185" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">LED RGB</text>
+      <text x="575" y="202" text-anchor="middle" font-size="11" fill="var(--ink-muted)">cátodo común</text>
+      <text x="512" y="144" text-anchor="end" font-size="11.5" fill="var(--ch-r)">R</text>
+      <text x="512" y="194" text-anchor="end" font-size="11.5" fill="var(--ch-g)">G</text>
+      <text x="512" y="244" text-anchor="end" font-size="11.5" fill="var(--ch-b)">B</text>
+
+      <!-- LED common -> GND bus -->
+      <line x1="575" y1="260" x2="575" y2="272" stroke="var(--wire-gnd)" stroke-width="2.5"/>
+      <line x1="575" y1="272" x2="610" y2="272" stroke="var(--wire-gnd)" stroke-width="2.5"/>
+      <text x="588" y="266" font-size="11" fill="var(--wire-gnd)">GND</text>
+
+      <!-- Potentiometer branch -->
+      <line x1="260" y1="320" x2="380" y2="320" stroke="var(--ch-r)" stroke-width="2.5"/>
+      <line x1="260" y1="360" x2="380" y2="360" stroke="var(--ch-g)" stroke-width="2.5"/>
+      <line x1="260" y1="400" x2="380" y2="400" stroke="var(--ch-b)" stroke-width="2.5"/>
+
+      <g>
+        <rect x="380" y="305" width="90" height="30" rx="6" fill="none" stroke="var(--ch-r)" stroke-width="2"/>
+        <text x="425" y="325" text-anchor="middle" font-size="12" fill="currentColor">POT · 10kΩ</text>
+
+        <rect x="380" y="345" width="90" height="30" rx="6" fill="none" stroke="var(--ch-g)" stroke-width="2"/>
+        <text x="425" y="365" text-anchor="middle" font-size="12" fill="currentColor">POT · 10kΩ</text>
+
+        <rect x="380" y="385" width="90" height="30" rx="6" fill="none" stroke="var(--ch-b)" stroke-width="2"/>
+        <text x="425" y="405" text-anchor="middle" font-size="12" fill="currentColor">POT · 10kΩ</text>
+      </g>
+
+      <!-- Pot power/ground stubs -->
+      <line x1="470" y1="308" x2="560" y2="308" stroke="var(--wire-pwr)" stroke-width="2"/>
+      <line x1="470" y1="332" x2="610" y2="332" stroke="var(--wire-gnd)" stroke-width="2"/>
+      <line x1="470" y1="348" x2="560" y2="348" stroke="var(--wire-pwr)" stroke-width="2"/>
+      <line x1="470" y1="372" x2="610" y2="372" stroke="var(--wire-gnd)" stroke-width="2"/>
+      <line x1="470" y1="388" x2="560" y2="388" stroke="var(--wire-pwr)" stroke-width="2"/>
+      <line x1="470" y1="412" x2="610" y2="412" stroke="var(--wire-gnd)" stroke-width="2"/>
+
+      <!-- 5V bus -->
+      <line x1="560" y1="308" x2="560" y2="388" stroke="var(--wire-pwr)" stroke-width="2.5"/>
+      <circle cx="560" cy="308" r="3" fill="var(--wire-pwr)"/>
+      <circle cx="560" cy="348" r="3" fill="var(--wire-pwr)"/>
+      <circle cx="560" cy="388" r="3" fill="var(--wire-pwr)"/>
+      <line x1="560" y1="308" x2="560" y2="290" stroke="var(--wire-pwr)" stroke-width="2.5"/>
+      <circle cx="560" cy="288" r="4" fill="none" stroke="var(--wire-pwr)" stroke-width="2"/>
+      <text x="560" y="272" text-anchor="middle" font-size="12" font-weight="600" fill="var(--wire-pwr)">+5V</text>
+
+      <!-- GND bus (shared: LED + pots) -->
+      <line x1="610" y1="272" x2="610" y2="412" stroke="var(--wire-gnd)" stroke-width="2.5"/>
+      <circle cx="610" cy="332" r="3" fill="var(--wire-gnd)"/>
+      <circle cx="610" cy="372" r="3" fill="var(--wire-gnd)"/>
+      <circle cx="610" cy="412" r="3" fill="var(--wire-gnd)"/>
+      <line x1="596" y1="424" x2="624" y2="424" stroke="var(--wire-gnd)" stroke-width="2"/>
+      <line x1="601" y1="430" x2="619" y2="430" stroke="var(--wire-gnd)" stroke-width="2"/>
+      <line x1="606" y1="436" x2="614" y2="436" stroke="var(--wire-gnd)" stroke-width="2"/>
+      <line x1="610" y1="412" x2="610" y2="424" stroke="var(--wire-gnd)" stroke-width="2"/>
+      <text x="610" y="450" text-anchor="middle" font-size="12" font-weight="600" fill="var(--wire-gnd)">GND</text>
+
+      <!-- Legend -->
+      <g transform="translate(700,96)">
+        <rect x="-14" y="-24" width="170" height="146" rx="8" fill="var(--bg)" stroke="var(--border)" stroke-width="1.5"/>
+        <line x1="0" y1="0" x2="20" y2="0" stroke="var(--ch-r)" stroke-width="3"/>
+        <text x="28" y="4" font-size="12" fill="currentColor">Canal R (D9 / A0)</text>
+        <line x1="0" y1="24" x2="20" y2="24" stroke="var(--ch-g)" stroke-width="3"/>
+        <text x="28" y="28" font-size="12" fill="currentColor">Canal G (D10 / A1)</text>
+        <line x1="0" y1="48" x2="20" y2="48" stroke="var(--ch-b)" stroke-width="3"/>
+        <text x="28" y="52" font-size="12" fill="currentColor">Canal B (D11 / A2)</text>
+        <line x1="0" y1="72" x2="20" y2="72" stroke="var(--wire-pwr)" stroke-width="3"/>
+        <text x="28" y="76" font-size="12" fill="currentColor">+5V</text>
+        <line x1="0" y1="96" x2="20" y2="96" stroke="var(--wire-gnd)" stroke-width="3"/>
+        <text x="28" y="100" font-size="12" fill="currentColor">GND común</text>
+      </g>
+
+    </svg>
+    <figcaption>Cada potenciómetro entrega su posición (wiper) a una entrada analógica; el firmware la escala a 0–255 y la escribe por PWM al canal correspondiente del LED. El cátodo del LED y un extremo de cada potenciómetro comparten el mismo nodo GND; el otro extremo de cada potenciómetro va a 5V.</figcaption>
+  </figure>
+
+  <div class="grid-two">
+    <section>
+      <h2>Tabla de pines</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Señal</th><th class="mono">Pin</th><th>Tipo</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="swatch" style="background:var(--ch-r)"></span>Potenciómetro R</td><td class="mono">A0</td><td>entrada analógica</td></tr>
+            <tr><td><span class="swatch" style="background:var(--ch-g)"></span>Potenciómetro G</td><td class="mono">A1</td><td>entrada analógica</td></tr>
+            <tr><td><span class="swatch" style="background:var(--ch-b)"></span>Potenciómetro B</td><td class="mono">A2</td><td>entrada analógica</td></tr>
+            <tr><td><span class="swatch" style="background:var(--ch-r)"></span>LED canal R</td><td class="mono">D9</td><td>salida PWM</td></tr>
+            <tr><td><span class="swatch" style="background:var(--ch-g)"></span>LED canal G</td><td class="mono">D10</td><td>salida PWM</td></tr>
+            <tr><td><span class="swatch" style="background:var(--ch-b)"></span>LED canal B</td><td class="mono">D11</td><td>salida PWM</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Lista de materiales</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Componente</th><th>Cant.</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Arduino Uno</td><td class="mono">1</td></tr>
+            <tr><td>LED RGB (cátodo común)</td><td class="mono">1</td></tr>
+            <tr><td>Potenciómetro 10kΩ</td><td class="mono">3</td></tr>
+            <tr><td>Resistencia 220Ω</td><td class="mono">3</td></tr>
+            <tr><td>Jumpers M-M</td><td class="mono">~10</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <section>
+    <h2>Pasos de conexión</h2>
+    <ol class="steps">
+      <li>En cada potenciómetro: pata izquierda a <strong>5V</strong>, pata derecha a <strong>GND</strong>, pata central (wiper) a su entrada analógica (<strong>A0</strong>, <strong>A1</strong> o <strong>A2</strong>).</li>
+      <li>Cada pata de color del LED (R, G, B) a su propia resistencia de <strong>220Ω</strong> en serie.</li>
+      <li>El otro extremo de cada resistencia al pin PWM correspondiente: <strong>D9</strong> (R), <strong>D10</strong> (G), <strong>D11</strong> (B).</li>
+      <li>La pata común del LED (cátodo) a <strong>GND</strong>.</li>
+    </ol>
+    <p class="note">El Uno solo genera PWM real (<code>analogWrite</code>) en los pines marcados <code>~</code>: 3, 5, 6, 9, 10, 11. Los pines A0–A5 son solo de lectura (<code>analogRead</code>) — por eso los potenciómetros van ahí y el LED va en los PWM.</p>
+  </section>
+
+  <section class="code-ref">
+    <h2>Código de referencia</h2>
+    <span class="path">src/uno/main.cpp</span>
+    <pre>const int POT_R_PIN = A0;
+const int POT_G_PIN = A1;
+const int POT_B_PIN = A2;
+
+const int LED_R_PIN = 9;
+const int LED_G_PIN = 10;
+const int LED_B_PIN = 11;
+
+void setup() {
+  pinMode(LED_R_PIN, OUTPUT);
+  pinMode(LED_G_PIN, OUTPUT);
+  pinMode(LED_B_PIN, OUTPUT);
+}
+
+void loop() {
+  int red = analogRead(POT_R_PIN) / 4;
+  int green = analogRead(POT_G_PIN) / 4;
+  int blue = analogRead(POT_B_PIN) / 4;
+
+  analogWrite(LED_R_PIN, red);
+  analogWrite(LED_G_PIN, green);
+  analogWrite(LED_B_PIN, blue);
+}</pre>
+  </section>
+
+  <footer class="doc-foot">
+    Diagrama esquemático simplificado — no representa la disposición física exacta de los pines en la placa real. Reemplaza al circuito de pulsador + LED de la tarea 1.
+  </footer>
+
+</div>
