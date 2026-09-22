@@ -1,0 +1,13 @@
+{
+    "folders": [
+        {
+            "name": "taller1",
+            "path": "."
+        },
+        {
+            "name": "taller2",
+            "path": "taller2"
+        }
+    ],
+    "settings": {}
+}
