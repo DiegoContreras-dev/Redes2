@@ -1,0 +1,22 @@
+; Plantilla: copia este archivo como platformio_local.ini y ajusta los puertos
+; a TUS placas. platformio_local.ini está en .gitignore, así que cada quien
+; tiene los suyos sin pisar los del resto.
+;
+; Para descubrir el identificador de cada placa, enchúfalas y corre:
+;
+;     ls -l /dev/serial/by-id/
+;
+; Usa la ruta de by-id y no /dev/ttyACM0 o /dev/ttyUSB0: esos números cambian
+; según el orden en que conectes las placas, y con dos UNO iguales es fácil
+; flashear el firmware equivocado en la placa equivocada.
+;
+; Si borras este archivo o no lo creas, PlatformIO autodetecta el puerto
+; (cómodo con una sola placa conectada, riesgoso con dos).
+
+[env:remoto]
+upload_port = /dev/serial/by-id/CAMBIAME
+monitor_port = ${this.upload_port}
+
+[env:controlador]
+upload_port = /dev/serial/by-id/CAMBIAME
+monitor_port = ${this.upload_port}

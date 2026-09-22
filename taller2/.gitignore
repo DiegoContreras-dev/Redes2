@@ -3,3 +3,6 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+
+# Puertos locales de cada placa (ver platformio_local.ini.example)
+platformio_local.ini
