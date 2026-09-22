@@ -6,15 +6,15 @@ const int SS_RX_PIN = 10;
 const int SS_TX_PIN = 11;
 SoftwareSerial controlSerial(SS_RX_PIN, SS_TX_PIN);
 
-const int TRIG_PIN = 8;
-const int ECHO_PIN = 12;
+const int TRIG_PIN = 9;
+const int ECHO_PIN = 8;
 
 const int DHT_PIN = 7;
 dht DHT11Sensor;
 
 const int LED_R_PIN = 6;
-const int LED_G_PIN = 5;
-const int LED_B_PIN = 3;
+const int LED_G_PIN = 3;
+const int LED_B_PIN = 5;
 
 const int LDR_PIN = A0;
 const int MQ5_PIN = A1;
@@ -160,7 +160,10 @@ void loop() {
   if (now - lastReportTime >= REPORT_INTERVAL_MS) {
     lastReportTime = now;
 
-    bool dhtOk = DHT11Sensor.read11(DHT_PIN) == DHTLIB_OK;
+    int8_t dhtCode = DHT11Sensor.read11(DHT_PIN);
+    bool dhtOk = dhtCode == DHTLIB_OK;
+    Serial.print("DHT11 codigo: ");
+    Serial.println(dhtCode);
     int luminosidad = analogRead(LDR_PIN);
 
     controlSerial.print("D,");
