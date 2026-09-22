@@ -31,7 +31,7 @@ void loop() {
   int green = analogRead(POT_G_PIN) / 4;
   int blue = analogRead(POT_B_PIN) / 4;
 
-  // DEBUG TEMPORAL: valor crudo de A0 para diagnosticar el pot rojo
+  // LED RGB de ánodo común: se invierte la señal PWM
   analogWrite(LED_R_PIN, 255 - red);
   analogWrite(LED_G_PIN, 255 - green);
   analogWrite(LED_B_PIN, 255 - blue);
