@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "author": "Marianela Diaz, Diego Contreras, Victor Jopia",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 260, "left": -20, "attrs": {} },
+
+    { "type": "wokwi-potentiometer", "id": "pot_r", "top": -20, "left": 240, "attrs": { "value": "0" } },
+    { "type": "wokwi-potentiometer", "id": "pot_g", "top": -20, "left": 400, "attrs": { "value": "0" } },
+    { "type": "wokwi-potentiometer", "id": "pot_b", "top": -20, "left": 560, "attrs": { "value": "0" } },
+
+    { "type": "wokwi-rgb-led", "id": "rgb1", "top": 150, "left": 400, "attrs": { "common": "anode" } },
+
+    { "type": "wokwi-resistor", "id": "r_r", "top": 220, "left": 250, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r_g", "top": 220, "left": 410, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r_b", "top": 220, "left": 570, "attrs": { "value": "220" } },
+
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": 300, "left": 780, "attrs": { "color": "blue" } },
+
+    { "type": "wokwi-led", "id": "led_btn", "top": 400, "left": 780, "attrs": { "color": "yellow" } },
+    { "type": "wokwi-resistor", "id": "r_btn", "top": 470, "left": 780, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    ["uno:A0", "pot_r:SIG", "#f0d200", []],
+    ["uno:A1", "pot_g:SIG", "#f0d200", []],
+    ["uno:A2", "pot_b:SIG", "#f0d200", []],
+
+    ["uno:5V", "pot_r:VCC", "red", []],
+    ["uno:5V", "pot_g:VCC", "red", []],
+    ["uno:5V", "pot_b:VCC", "red", []],
+
+    ["uno:GND.1", "pot_r:GND", "black", []],
+    ["uno:GND.1", "pot_g:GND", "black", []],
+    ["uno:GND.1", "pot_b:GND", "black", []],
+
+    ["uno:5V", "rgb1:COM", "red", []],
+
+    ["rgb1:R", "r_r:1", "black", []],
+    ["r_r:2", "uno:11", "green", []],
+
+    ["rgb1:G", "r_g:1", "black", []],
+    ["r_g:2", "uno:6", "green", []],
+
+    ["rgb1:B", "r_b:1", "black", []],
+    ["r_b:2", "uno:10", "green", []],
+
+    ["btn1:1.l", "uno:5", "blue", []],
+    ["btn1:2.r", "uno:GND.2", "black", []],
+
+    ["uno:7", "r_btn:1", "green", []],
+    ["r_btn:2", "led_btn:A", "green", []],
+    ["led_btn:C", "uno:GND.3", "black", []]
+  ]
+}
