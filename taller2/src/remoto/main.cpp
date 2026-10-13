@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-#include <dht.h>
+#include <DHT.h>
 
 const int SS_RX_PIN = 10;
 const int SS_TX_PIN = 11;
@@ -10,7 +10,7 @@ const int TRIG_PIN = 9;
 const int ECHO_PIN = 8;
 
 const int DHT_PIN = 7;
-dht DHT11Sensor;
+DHT dhtSensor(DHT_PIN, DHT22);
 
 const int LED_R_PIN = 6;
 const int LED_G_PIN = 3;
@@ -30,6 +30,13 @@ bool blinkOn = false;
 
 float lastDistanceCm = -1;
 int lastGasRaw = 0;
+
+// Si una lectura del DHT22 falla (la libreria devuelve NaN), como temperatura y
+// humedad casi no cambian entre reportes, se manda la ultima lectura buena en
+// vez de reportar -1.
+float lastTemperatureC = -1;
+float lastHumidityPct = -1;
+bool dhtAlgunaVezOk = false;
 
 int gasThreshold = 600;
 int distThreshold = 20;
@@ -113,6 +120,7 @@ void procesarMensaje(const String &linea) {
 void setup() {
   Serial.begin(9600);
   controlSerial.begin(9600);
+  dhtSensor.begin();
 
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
@@ -160,16 +168,22 @@ void loop() {
   if (now - lastReportTime >= REPORT_INTERVAL_MS) {
     lastReportTime = now;
 
-    int8_t dhtCode = DHT11Sensor.read11(DHT_PIN);
-    bool dhtOk = dhtCode == DHTLIB_OK;
-    Serial.print("DHT11 codigo: ");
-    Serial.println(dhtCode);
+    float humedad = dhtSensor.readHumidity();
+    float temperatura = dhtSensor.readTemperature();
+    if (isnan(humedad) || isnan(temperatura)) {
+      Serial.println(F("DHT22: ERROR lectura (NaN)"));
+    } else {
+      lastTemperatureC = temperatura;
+      lastHumidityPct = humedad;
+      dhtAlgunaVezOk = true;
+      Serial.println(F("DHT22: OK"));
+    }
     int luminosidad = analogRead(LDR_PIN);
 
     controlSerial.print("D,");
-    controlSerial.print(dhtOk ? DHT11Sensor.temperature : -1);
+    controlSerial.print(dhtAlgunaVezOk ? lastTemperatureC : -1);
     controlSerial.print(",");
-    controlSerial.print(dhtOk ? DHT11Sensor.humidity : -1);
+    controlSerial.print(dhtAlgunaVezOk ? lastHumidityPct : -1);
     controlSerial.print(",");
     controlSerial.print(lastDistanceCm);
     controlSerial.print(",");
@@ -178,3 +192,6 @@ void loop() {
     controlSerial.println(lastGasRaw);
   }
 }
+
+
+
