@@ -50,3 +50,10 @@ Al menos una, extendiendo la lógica de umbrales del taller 2: gas alto, objeto 
 ## Riesgos
 - No hay hardware en el repo; el cableado y los pines deben confirmarse con el usuario antes de fijar `main.cpp`.
 - Wokwi no simula BLE, así que toda la validación es en físico.
+
+## Estado actual (2026-11-02)
+- Solo hay una ESP32 DevKit V1 (la sensora, con los sensores). La controladora está escrita y compila, pero sin probar por falta de la segunda placa.
+- Con una sola placa la alarma corre local en la sensora (LED de GPIO2 y líneas `ALARMA`/`ALERTA` por Serial). La etapa 1 (celular por BLE) queda completa; la etapa 2 solo se prueba con alarma local. Si aparece una segunda ESP32 basta con `pio run -e controlador -t upload`.
+- La subida a 460800 baudios fallaba con `No serial data received`, por eso `platformio.ini` fija `upload_speed = 115200`.
+- Para funcionar con baterías, la sensora se alimenta por VIN (5 V a 12 V). No conectar USB y baterías a la vez. El MQ-5 necesita unos minutos de calentamiento antes de dar lecturas estables.
+- Límite conocido: el BLE no usa emparejamiento ni cifrado, así que cualquier dispositivo cercano puede conectarse. Mejora futura: emparejamiento con clave y fijar la dirección de la sensora en la controladora.
