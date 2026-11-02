@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "author": "Marianela Diaz, Diego Contreras, Victor Jopia",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp_sens", "top": 4.7, "left": 4.6, "attrs": {} },
+    { "type": "wokwi-breadboard-half", "id": "bb1", "top": 330, "left": -130, "attrs": {} },
+    { "type": "wokwi-photoresistor-sensor", "id": "ldr", "top": 3.2, "left": -296.8, "attrs": {} },
+    { "type": "wokwi-gas-sensor", "id": "mq5", "top": 156.3, "left": -501.8, "attrs": {} },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_g1",
+      "top": 301.55,
+      "left": -297.6,
+      "attrs": { "value": "10000" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_g2",
+      "top": 380,
+      "left": -330,
+      "attrs": { "value": "20000" }
+    },
+    { "type": "wokwi-dht22", "id": "dht", "top": 182.7, "left": 436.2, "attrs": {} },
+    { "type": "wokwi-hc-sr04", "id": "us", "top": -123.3, "left": 264.7, "attrs": {} },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_e1",
+      "top": 349.55,
+      "left": 249.6,
+      "attrs": { "value": "1000" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_e2",
+      "top": 426.35,
+      "left": 268.8,
+      "attrs": { "value": "2000" }
+    },
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp_ctrl", "top": 0, "left": 700, "attrs": {} },
+    {
+      "type": "wokwi-led",
+      "id": "led_alarma",
+      "top": 100,
+      "left": 1060,
+      "attrs": { "color": "red" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_led",
+      "top": 120,
+      "left": 940,
+      "attrs": { "value": "220" }
+    }
+  ],
+  "connections": [
+    [ "esp_sens:D4", "dht:SDA", "green", [ "h282.7", "v225.6", "h76.7" ] ],
+    [ "esp_sens:D5", "us:TRIG", "blue", [ "h30" ] ],
+    [ "us:ECHO", "r_e1:1", "orange", [ "v38.4", "h-96" ] ],
+    [ "r_e1:2", "r_e2:1", "orange", [ "v19.2", "h-88.4", "v19.2" ] ],
+    [ "r_e1:2", "esp_sens:D18", "orange", [ "v-28.8", "h18", "v-47.65", "h-135.2", "v-192.35" ] ],
+    [ "esp_sens:D34", "ldr:AO", "purple", [ "h-30" ] ],
+    [ "mq5:AOUT", "r_g1:1", "gold", [] ],
+    [ "r_g1:2", "r_g2:1", "gold", [ "h18", "v-38.05", "h-109.2" ] ],
+    [ "r_g1:2", "esp_sens:D35", "gold", [ "h229.2", "v-239.6" ] ],
+    [ "esp_ctrl:D2", "r_led:1", "green", [] ],
+    [ "r_led:2", "led_alarma:A", "green", [] ],
+    [ "led_alarma:C", "esp_ctrl:GND.1", "black", [] ],
+    [ "esp_sens:3V3", "bb1:tp.25", "red", [ "h52.3", "v183.8" ] ],
+    [ "esp_sens:GND.1", "bb1:tn.25", "black", [] ],
+    [ "esp_sens:VIN", "bb1:bp.1", "red", [] ],
+    [ "esp_sens:GND.2", "bb1:bn.1", "black", [ "h-149", "v398.2", "h48" ] ],
+    [ "dht:VCC", "bb1:tp.20", "red", [ "h-297.6", "v9.6", "h-38.4" ] ],
+    [ "dht:GND", "bb1:tn.20", "black", [ "v316.8", "h-384", "v-262.1" ] ],
+    [ "ldr:VCC", "bb1:tp.3", "red", [] ],
+    [ "ldr:GND", "bb1:tn.3", "black", [ "h70.4", "v326.3" ] ],
+    [ "us:VCC", "bb1:bp.20", "red", [ "v48", "h182.4", "v489.6", "h-403.2" ] ],
+    [ "us:GND", "bb1:bn.20", "black", [ "h181.2", "v604.8", "h-432" ] ],
+    [ "mq5:VCC", "bb1:bp.3", "red", [ "h201.6", "v313.8" ] ],
+    [ "mq5:GND", "bb1:bn.3", "black", [ "h182.4", "v333.5" ] ],
+    [ "r_e2:2", "bb1:bn.22", "black", [ "h84.4", "v140.65" ] ],
+    [ "r_g2:2", "bb1:bn.5", "black", [] ]
+  ],
+  "dependencies": {}
+}
