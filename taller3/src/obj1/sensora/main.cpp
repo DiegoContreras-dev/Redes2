@@ -94,8 +94,16 @@ void publica(NimBLECharacteristic *caracteristica, const char *texto) {
   caracteristica->notify();
 }
 
-NimBLECharacteristic *creaCaracteristica(NimBLEService *servicio, const char *uuid) {
-  return servicio->createCharacteristic(uuid, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+// Cada caracteristica lleva un nombre legible (descriptor 0x2901) y se declara
+// como texto UTF-8 (descriptor 0x2904), asi nRF Connect muestra "6.0" en vez
+// de bytes en hexadecimal.
+NimBLECharacteristic *creaCaracteristica(NimBLEService *servicio, const char *uuid, const char *nombre) {
+  NimBLECharacteristic *c =
+      servicio->createCharacteristic(uuid, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+  c->createDescriptor("2901", NIMBLE_PROPERTY::READ)->setValue(std::string(nombre));
+  NimBLE2904 *formato = (NimBLE2904 *)c->createDescriptor("2904");
+  formato->setFormat(NimBLE2904::FORMAT_UTF8);
+  return c;
 }
 
 void procesarComandoTeclado(const String &linea) {
@@ -201,11 +209,11 @@ void setup() {
   servidor->setCallbacks(&serverCallbacks);
 
   NimBLEService *servicio = servidor->createService(UUID_SERVICIO);
-  charTemp = creaCaracteristica(servicio, UUID_TEMP);
-  charHum = creaCaracteristica(servicio, UUID_HUM);
-  charLuz = creaCaracteristica(servicio, UUID_LUZ);
-  charDist = creaCaracteristica(servicio, UUID_DIST);
-  charGas = creaCaracteristica(servicio, UUID_GAS);
+  charTemp = creaCaracteristica(servicio, UUID_TEMP, "Temperatura (C)");
+  charHum = creaCaracteristica(servicio, UUID_HUM, "Humedad (%)");
+  charDist = creaCaracteristica(servicio, UUID_DIST, "Distancia (cm)");
+  charLuz = creaCaracteristica(servicio, UUID_LUZ, "Luz (0-1023)");
+  charGas = creaCaracteristica(servicio, UUID_GAS, "Gas (0-1023)");
 
   // Valor inicial para que un Read desde el celular nunca devuelva vacio.
   publica(charTemp, "-1");
