@@ -2,7 +2,7 @@
 
 // UUIDs compartidos por la sensora (servidor) y la controladora (cliente).
 // Cada sensor es una característica READ + NOTIFY con texto ASCII (p. ej. "23.5").
-#define NOMBRE_SENSORA "Sensora-T3"
+#define NOMBRE_SENSORA "Vitoreke--Erome"
 
 #define UUID_SERVICIO "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
 #define UUID_TEMP     "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
