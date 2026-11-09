@@ -37,21 +37,7 @@
       "left": 268.8,
       "attrs": { "value": "2000" }
     },
-    { "type": "wokwi-esp32-devkit-v1", "id": "esp_ctrl", "top": 0, "left": 700, "attrs": {} },
-    {
-      "type": "wokwi-led",
-      "id": "led_alarma",
-      "top": 100,
-      "left": 1060,
-      "attrs": { "color": "red" }
-    },
-    {
-      "type": "wokwi-resistor",
-      "id": "r_led",
-      "top": 120,
-      "left": 940,
-      "attrs": { "value": "220" }
-    }
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp_ctrl", "top": 0, "left": 700, "attrs": {} }
   ],
   "connections": [
     [ "esp_sens:D4", "dht:SDA", "green", [ "h282.7", "v225.6", "h76.7" ] ],
@@ -63,9 +49,6 @@
     [ "mq5:AOUT", "r_g1:1", "gold", [] ],
     [ "r_g1:2", "r_g2:1", "gold", [ "h18", "v-38.05", "h-109.2" ] ],
     [ "r_g1:2", "esp_sens:D35", "gold", [ "h229.2", "v-239.6" ] ],
-    [ "esp_ctrl:D2", "r_led:1", "green", [] ],
-    [ "r_led:2", "led_alarma:A", "green", [] ],
-    [ "led_alarma:C", "esp_ctrl:GND.1", "black", [] ],
     [ "esp_sens:3V3", "bb1:tp.25", "red", [ "h52.3", "v183.8" ] ],
     [ "esp_sens:GND.1", "bb1:tn.25", "black", [] ],
     [ "esp_sens:VIN", "bb1:bp.1", "red", [] ],
