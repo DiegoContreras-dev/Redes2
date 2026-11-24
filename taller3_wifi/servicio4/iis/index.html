@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Estación ambiental · IIS</title>
+<style>
+:root{color-scheme:light;--ink:#183b56;--muted:#52687a}*{box-sizing:border-box}body{margin:0;background:#eef3f7;color:var(--ink);font:16px/1.5 'Segoe UI',Arial,sans-serif}header{background:var(--ink);color:white;padding:20px max(22px,calc((100vw - 1100px)/2));display:flex;justify-content:space-between;align-items:center;gap:14px}header strong{font-size:19px}header span{font-size:13px}main{max-width:1150px;margin:auto;padding:38px 24px}h1{font-size:clamp(28px,5vw,42px);line-height:1.2;margin:0 0 10px;letter-spacing:-1px}p{margin:10px 0}.muted{color:var(--muted)}.status{margin:24px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap}.pill{border:1px solid #bdcdd9;border-radius:24px;padding:5px 12px;font-size:14px}.online{background:#e3f4ec;color:#175b40}.offline{background:#fce8e5;color:#8d3026}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.card{background:white;border:1px solid #d5e0e9;border-radius:14px;padding:22px;border-top:4px solid var(--accent)}h2{font-size:17px;margin:0 0 18px}.value{font-size:clamp(25px,3.4vw,39px);font-weight:650;font-variant-numeric:tabular-nums;min-height:60px;overflow-wrap:anywhere}.unit{font-size:13px;color:var(--muted)}.panel{background:white;border:1px solid #d5e0e9;border-radius:14px;padding:24px;margin-top:24px}.alarm{font-size:23px;font-weight:600}.notice{color:#8d3026}.controls{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}button,input{font:inherit;border-radius:7px;padding:11px 15px}button{background:#183b56;color:white;border:1px solid #183b56;cursor:pointer;min-height:44px}button.secondary{background:white;color:#183b56}button.danger{background:#a8362d;border-color:#a8362d}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #2485bd;outline-offset:3px}input{border:1px solid #93a8b8;width:100%}label{display:block;font-size:14px;margin:12px 0 5px}form{max-width:390px}summary{cursor:pointer;padding:5px 0;font-weight:600}footer{margin-top:25px;font-size:13px;color:var(--muted)}[hidden]{display:none!important}#feedback{min-height:24px} @media(max-width:800px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:450px){header{align-items:flex-start;flex-direction:column}.grid{grid-template-columns:1fr}.value{min-height:45px}main{padding:28px 18px}.panel{padding:20px}}
+</style></head><body>
+<header><strong>Estación ambiental</strong><span>Servicio 4 · Redes de Computadores II</span></header>
+<main><h1>Monitoreo y alarma remota</h1><p class="muted">Consulta pública de las mediciones. La alarma se activa manualmente desde el acceso de administrador.</p>
+<div class="status"><span id="connection" class="pill">Consultando estación…</span><span class="muted">Última recepción: <strong id="updated">Sin datos</strong></span></div>
+<section class="grid" aria-label="Mediciones"><article class="card" style="--accent:#b74d35"><h2>Temperatura</h2><div class="value" id="temperatura">—</div><span class="unit">Grados Celsius</span></article><article class="card" style="--accent:#226ca4"><h2>Humedad relativa</h2><div class="value" id="humedad">—</div><span class="unit">Porcentaje</span></article><article class="card" style="--accent:#9b700b"><h2>Luminosidad</h2><div class="value" id="luz">—</div><span class="unit">Nivel relativo · 0 a 1023</span></article><article class="card" style="--accent:#6d5a9e"><h2>Gas</h2><div class="value" id="gas">—</div><span class="unit">Nivel relativo · 0 a 1023</span></article></section>
+<section class="panel" aria-labelledby="alarmtitle"><h2 id="alarmtitle">Control de alarma</h2><p class="alarm" id="alarm">Sin orden de activación</p><p id="gasnotice" class="notice" role="status"></p><p class="muted">El estado mostrado es la orden del servidor, no una confirmación física del relé. Cada activación dura como máximo 60 segundos.</p>
+<div id="operator" hidden><p>Sesión de administrador activa.</p><div class="controls"><button class="danger" id="on" type="button">Activar alarma</button><button id="off" type="button">Desactivar alarma</button><button class="secondary" id="logout" type="button">Cerrar sesión</button></div></div>
+<details id="access"><summary>Acceso de administrador</summary><form id="login"><label for="user">Usuario</label><input id="user" autocomplete="username" required maxlength="100"><label for="password">Contraseña</label><input id="password" type="password" autocomplete="current-password" required maxlength="200"><div class="controls"><button type="submit">Iniciar sesión</button></div></form></details><p id="feedback" role="status"></p></section>
+<footer>La ESP32 envía una muestra cada 30 segundos. Este panel consulta IIS cada 2 segundos. Sin recepción durante 90 segundos, las mediciones se marcan como antiguas.</footer></main>
+<script>
+let csrf='',fresh=false,busy=false;
+const $=id=>document.getElementById(id);
+async function request(op,body){
+ const options={cache:'no-store',credentials:'same-origin'};
+ if(body!==undefined){options.method='POST';options.headers={'Content-Type':'application/json','X-CSRF-Token':csrf};options.body=JSON.stringify(body);}
+ const r=await fetch('api.ashx?op='+op,options);
+ let d;try{d=await r.json();}catch(e){throw new Error('IIS no devolvió datos JSON. Revisa ASP.NET y la configuración del sitio.');}
+ if(!r.ok){if(r.status===401&&op!=='login')session(false);throw new Error(d.error||'Error de comunicación');}return d;
+}
+function session(on){$('operator').hidden=!on;$('access').hidden=on;if(!on){csrf='';$('password').value='';}}
+async function refresh(){
+ try{const d=await request('data');fresh=d.conectado;
+ $('connection').textContent=fresh?'ESP32 con datos recientes':'Sin datos recientes de la ESP32';$('connection').className='pill '+(fresh?'online':'offline');
+ for(const name of ['temperatura','humedad','luz','gas']){const v=d.datos?d.datos[name]:null;$(name).textContent=v===null?'Sin lectura':v;}
+ $('updated').textContent=d.ultima?new Date(d.ultima).toLocaleString('es-CL'):'Sin datos';
+ $('alarm').textContent=d.alarmaSolicitada?'Activación solicitada · '+d.segundosRestantes+' s restantes':'Sin orden de activación';
+ $('gasnotice').textContent=fresh&&d.datos&&d.datos.gas>600?'Nivel de gas sobre el umbral relativo de 600. Un administrador puede activar la alarma.':'';
+ }catch(e){fresh=false;$('connection').textContent='Sin conexión con IIS · valores anteriores';$('connection').className='pill offline';}
+ $('on').disabled=!fresh||busy;setTimeout(refresh,2000);
+}
+$('login').addEventListener('submit',async e=>{e.preventDefault();const button=e.submitter;button.disabled=true;try{const d=await request('login',{usuario:$('user').value,clave:$('password').value});csrf=d.csrf;session(true);$('password').value='';$('feedback').textContent='Sesión iniciada.';}catch(err){$('feedback').textContent=err.message;}finally{button.disabled=false;}});
+async function alarm(on){busy=true;$('on').disabled=true;$('off').disabled=true;try{await request('alarm',{activa:on});$('feedback').textContent=on?'Orden enviada. La ESP32 la consultará en su siguiente petición.':'Orden de desactivación enviada.';}catch(e){$('feedback').textContent=e.message;}finally{busy=false;$('on').disabled=!fresh;$('off').disabled=false;}}
+$('on').onclick=()=>alarm(true);$('off').onclick=()=>alarm(false);
+$('logout').onclick=async()=>{try{await request('logout',{});session(false);$('feedback').textContent='Sesión cerrada. La orden vigente no cambia; desactívala antes de salir si lo necesitas.';}catch(e){$('feedback').textContent=e.message;}};
+refresh();
+</script></body></html>
